@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>unstarted</h1>
+{#    <h1>Sign In</h1>#}
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.student_name.label }}<br>
+            {{ form.student_name(size=32) }}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    <form action="" method="post">
+    <button name="submit" value="assign">Assign (Instructors Only)</button>
+    </form>
+    <h6>students: {{ students }}</h6>
+    <h6>assignments:{{ assignments }}</h6>
+{% endblock %}

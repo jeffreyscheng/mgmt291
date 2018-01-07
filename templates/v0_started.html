@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>started</h1>
+    <form action="" method="post">
+    <button name="submit" value="edit">Edit (Instructors Only)</button>
+    </form>
+    <form action="" method="post">
+    <button name="submit" value="reset">Reset (Instructors Only)</button>
+    </form>
+    <h6>assignments:{{ assignments }}</h6>
+{% endblock %}

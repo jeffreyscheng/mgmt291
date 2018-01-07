@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>class</h1>
+    <form action="" method="post">
+    <button name="submit" value="add">+New (Instructors Only)</button>
+    </form>
+    {% for roleplay in roleplays %}
+        <form action="" method="post">
+        <button name="submit" value={{ roleplay.number }}>Roleplay {{ roleplay.number }}: {{ roleplay.name }}</button>
+        </form>
+    {% endfor %}
+{% endblock %}
