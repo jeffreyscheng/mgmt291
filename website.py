@@ -11,9 +11,11 @@ from forms import *
 # test_section = Section("test_name", "Jeffrey Cheng", "password")
 # test_roleplay = Roleplay("test")
 # test_section.add_roleplay(test_roleplay)
-test_section = Section(name="test_name", instructor="Jeffrey", password_hash='')
-db.session.add(test_section)
-db.session.commit()
+check_empty = Section.query.first()
+if check_empty is None:
+    test_section = Section(name="test_name", instructor="Jeffrey", password_hash='')
+    db.session.add(test_section)
+    db.session.commit()
 
 
 @app.route('/favicon.ico')
@@ -42,7 +44,7 @@ def landing_add():
     if request.method == 'POST':
         if request.form['submit'] == 'Add Roleplay':
             current_section = Section.query.filter_by(name="test_name").first()
-            current_section.add_roleplay(request.form['roleplay_name'])
+            current_section.add_roleplay(request.form['roleplay_name'], request.form['roleplay_type'])
             return redirect('/')
     else:
         current_section = Section.query.filter_by(name="test_name").first()
@@ -52,12 +54,16 @@ def landing_add():
 
 @app.route('/<roleplay_number>', methods=['GET', 'POST'])
 def landing_roleplay(roleplay_number):
+    print("refreshed")
     roleplay = Roleplay.query.filter_by(section_name="test_name", number=roleplay_number).first()
+    records = AttendanceRecord.query.filter_by(parent_roleplay=roleplay).all()
+    print(records)
+    students = [record.student_name for record in records]
     student_sign_in = SignInForm()
     started_template = render_template('v0_started.html', roleplay_name=roleplay.name,
                                        assignments=roleplay.assignments, form=student_sign_in)
     unstarted_template = render_template('v0_unstarted.html', roleplay_name=roleplay.name,
-                                         assignments=roleplay.assignments, form=student_sign_in)
+                                         students=students, form=student_sign_in)
     if roleplay.started:  # STARTED LOGIC)
         if request.method == 'POST':
             if request.form['submit'] == 'edit':
@@ -77,7 +83,7 @@ def landing_roleplay(roleplay_number):
             elif request.form['submit'] == 'Sign In':
                 if student_sign_in.validate_on_submit():
                     roleplay.add_record(request.form['student_name'])
-                    return unstarted_template
+                    return redirect('/' + roleplay_number)
                 else:
                     print("did not validate")
                     return None

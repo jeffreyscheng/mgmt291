@@ -28,11 +28,11 @@ class Section(db.Model):
     #     self.roleplays = []
     #     # self.students = {}  # e.g. students['Jeffrey Cheng'] = ['partner 1', 'partner 2']
 
-    def add_roleplay(self, name):
+    def add_roleplay(self, name, type):
         associated_roleplays = Roleplay.query.with_parent(self).all()
         num_roleplays = len(associated_roleplays)
         new_roleplay = Roleplay(name=name, number=num_roleplays + 1, assignments='',
-                                started=False, parent_section=self)
+                                started=False, parent_section=self, type=type)
         db.session.add(new_roleplay)
         db.session.commit()
         print("TESTING IN ADD_ROLEPLAY")
@@ -48,6 +48,7 @@ class Roleplay(db.Model):
     assignments = db.Column(db.String(4000))
     started = db.Column(db.Boolean)
     section_name = db.Column(db.String(64), db.ForeignKey('section.name'))
+    type = db.Column(db.String(64))
     attendees = db.relationship('AttendanceRecord', backref='parent_roleplay', lazy='dynamic')
 
     def __repr__(self):
@@ -73,7 +74,7 @@ class Roleplay(db.Model):
             db.session.commit()
 
     def assign(self):
-        # TODO
+        # gets preferences
         encounters = pd.DataFrame(0, index=self.students, columns=self.students)
         previous_roleplays = list(self.section.roleplays)
         previous_roleplays.remove(self)
@@ -92,6 +93,9 @@ class Roleplay(db.Model):
             student_encounters = encounters[student].to_dict()
             print(student_encounters)
             pref_lists[student] = sorted(student_encounters, key=lambda k: student_encounters[k])
+        # TODO: assign
+        if self.type == '1v1':
+
 
 
 class AttendanceRecord(db.Model):

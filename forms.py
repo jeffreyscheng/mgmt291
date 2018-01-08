@@ -16,4 +16,5 @@ class SignInForm(FlaskForm):
 
 class AddRoleplayForm(FlaskForm):
     roleplay_name = StringField('Name', validators=[DataRequired()])
+    roleplay_type = StringField('Type', validators=[DataRequired()])
     submit = SubmitField('Add Roleplay')
