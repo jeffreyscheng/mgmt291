@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Welcome to Negotiations!</h1>
+
+    Select your course and section below.
+    <ul>
+    {% for section in sections %}
+        <li><a href= {{ '/' + section.name }}>{{ section.name }}</a></li>
+    {% endfor %}
+    </ul>
+    <form action="" method="post">
+    <button name="submit" value="add">+New Section (Instructors Only)</button>
+    </form>
+{% endblock %}

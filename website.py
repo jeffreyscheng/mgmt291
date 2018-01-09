@@ -25,21 +25,14 @@ def favicon():
 
 
 @app.route('/', methods=['GET', 'POST'])
-def landing_class():
-    if request.method == 'POST':
-        if request.form['submit'] == 'add':
-            return redirect('/add')
-        else:
-            roleplay_number = request.form['submit']
-            return redirect('/' + roleplay_number)
-    else:
-        current_section = Section.query.filter_by(name="test_name").first()
-        return render_template('class.html',
-                               roleplays=Roleplay.query.with_parent(current_section).all())
+def landing_home():
+    return render_template('home.html', sections=Section.query.all())
+    # return render_template('cis160.html', sections=Section.query.all())
 
 
 @app.route('/add', methods=['GET', 'POST'])
-def landing_add():
+def landing_add_section():
+    # TODO
     form = AddRoleplayForm()
     if request.method == 'POST':
         if request.form['submit'] == 'Add Roleplay':
@@ -47,15 +40,43 @@ def landing_add():
             current_section.add_roleplay(request.form['roleplay_name'], request.form['group_size'])
             return redirect('/')
     else:
-        current_section = Section.query.filter_by(name="test_name").first()
-        return render_template('add.html', roleplays=Roleplay.query.with_parent(current_section).all(),
+        current_section = Section.query.filter_by(name=section_name).first()
+        return render_template('add_class.html', roleplays=Roleplay.query.with_parent(current_section).all(),
                                form=form)
 
 
-@app.route('/<roleplay_number>', methods=['GET', 'POST'])
-def landing_roleplay(roleplay_number):
+@app.route('/<section_name>', methods=['GET', 'POST'])
+def landing_class(section_name):
+    if request.method == 'POST':
+        if request.form['submit'] == 'add':
+            return redirect('/' + section_name + '/add')
+        # else:
+        #     roleplay_number = request.form['submit']
+        #     return redirect('/' + section_name + '/' + roleplay_number)
+    else:
+        current_section = Section.query.filter_by(name="test_name").first()
+        return render_template('class.html',
+                               roleplays=Roleplay.query.with_parent(current_section).all())
+
+
+@app.route('/<section_name>/add', methods=['GET', 'POST'])
+def landing_add_roleplay(section_name):
+    form = AddRoleplayForm()
+    if request.method == 'POST':
+        if request.form['submit'] == 'Add Roleplay':
+            current_section = Section.query.filter_by(name="test_name").first()
+            current_section.add_roleplay(request.form['roleplay_name'], request.form['group_size'])
+            return redirect('/' + section_name)
+    else:
+        current_section = Section.query.filter_by(name=section_name).first()
+        return render_template('add_class.html', roleplays=Roleplay.query.with_parent(current_section).all(),
+                               form=form)
+
+
+@app.route('/<section_name>/<roleplay_number>', methods=['GET', 'POST'])
+def landing_roleplay(section_name, roleplay_number):
     print("refreshed")
-    roleplay = Roleplay.query.filter_by(section_name="test_name", number=roleplay_number).first()
+    roleplay = Roleplay.query.filter_by(section_name=section_name, number=roleplay_number).first()
     records = AttendanceRecord.query.filter_by(parent_roleplay=roleplay).all()
     print(records)
     students = [record.student_name for record in records]
@@ -79,11 +100,11 @@ def landing_roleplay(roleplay_number):
         if request.method == 'POST':
             if request.form['submit'] == 'assign':
                 roleplay.start()
-                return redirect('/' + roleplay_number)
+                return redirect('/' + section_name + '/' + roleplay_number)
             elif request.form['submit'] == 'Sign In':
                 if student_sign_in.validate_on_submit():
                     roleplay.add_record(request.form['student_name'])
-                    return redirect('/' + roleplay_number)
+                    return redirect('/' + section_name + '/' + roleplay_number)
                 else:
                     print("did not validate")
                     return None
