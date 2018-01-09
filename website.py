@@ -5,17 +5,12 @@ from flask import request, url_for
 from flask import redirect
 from forms import *
 
-# from forms import *
 
-# FIX THIS
-# test_section = Section("test_name", "Jeffrey Cheng", "password")
-# test_roleplay = Roleplay("test")
-# test_section.add_roleplay(test_roleplay)
-check_empty = Section.query.first()
-if check_empty is None:
-    test_section = Section(name="test_name", instructor="Jeffrey", password_hash='')
-    db.session.add(test_section)
-    db.session.commit()
+# check_empty = Section.query.first()
+# if check_empty is None:
+#     test_section = Section(name="test_name", instructor="Jeffrey", password_hash='')
+#     db.session.add(test_section)
+#     db.session.commit()
 
 
 @app.route('/favicon.ico')
@@ -73,7 +68,7 @@ def landing_add_roleplay(section_name):
     form = AddRoleplayForm()
     if request.method == 'POST':
         if request.form['submit'] == 'Add Roleplay':
-            current_section = Section.query.filter_by(name="test_name").first()
+            current_section = Section.query.filter_by(name=section_name).first()
             current_section.add_roleplay(request.form['roleplay_name'], request.form['group_size'])
             return redirect('/' + section_name)
     else:
@@ -95,7 +90,7 @@ def landing_roleplay(section_name, roleplay_number):
     if roleplay.started:  # STARTED LOGIC)
         if request.method == 'POST':
             if request.form['submit'] == 'edit':
-                return None  # TODO
+                return redirect('/' + section_name + '/' + roleplay_number + '/edit')
             # elif request.form['submit'] == 'reset':
             #     return None  # TODO
             else:
@@ -120,6 +115,29 @@ def landing_roleplay(section_name, roleplay_number):
                 return None
         elif request.method == 'GET':
             return template
+
+
+@app.route('/<section_name>/<roleplay_number>/edit', methods=['GET', 'POST'])
+def landing_edit_roleplay(section_name, roleplay_number):
+    form = EditRoleplayForm()
+    current_roleplay = Roleplay.query.filter_by(section_name=section_name, number=roleplay_number).first()
+    if request.method == 'POST':
+        if request.form['submit'] == 'Edit Assignments':
+            edit_string = request.form['assignments']
+            edit_arr = edit_string.split('\n')
+            edit_arr = ['(' + group + ')' for group in edit_arr]
+            new_assignments_string = '[' + ','.join(edit_arr) + ']'
+            current_roleplay.assignments = new_assignments_string
+            db.session.commit()
+            return redirect('/' + section_name + '/' + roleplay_number)
+    else:
+        assignments_string = current_roleplay.assignments.replace('(', '').replace('), ', '\n').replace('),', '\n')
+        assignments_string = assignments_string[1:len(assignments_string) - 2]
+        count = assignments_string.count("\n")
+        form.assignments.default = assignments_string
+        form.process()
+        return render_template('edit_roleplay.html', roleplays=current_roleplay, assignments_string=assignments_string,
+                               form=form, count=count)
 
 
 if __name__ == '__main__':

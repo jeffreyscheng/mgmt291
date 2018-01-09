@@ -2,7 +2,9 @@
 
 {% block content %}
     <h1>{{ section_name }}</h1>
-    <p>Select a roleplay below.</p>
+    {% if roleplays %}
+        <p>Select a roleplay below.</p>
+    {% endif %}
     <ul>
     {% for roleplay in roleplays %}
         <li>

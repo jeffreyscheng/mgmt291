@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, IntegerField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, IntegerField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired
 
 
@@ -26,3 +26,8 @@ class AddSectionForm(FlaskForm):
     password = StringField('Password', validators=[DataRequired()])
     password2 = StringField('Confirm Password', validators=[DataRequired()])
     submit = SubmitField('Add Section')
+
+
+class EditRoleplayForm(FlaskForm):
+    assignments = TextAreaField('Assignments', validators=[DataRequired()])
+    submit = SubmitField('Edit Assignments')

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Edit Roleplay Assignments</h1>
+    <form action="" method="post" value={{ assignments_string }} height="2000px">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.assignments.label }}<br>
+            {{ form.assignments(cols="50", rows="30")}}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
