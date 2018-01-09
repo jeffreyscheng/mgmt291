@@ -3,7 +3,7 @@
 {% block content %}
     <h1>Welcome to Negotiations!</h1>
 
-    Select your course and section below.
+    <p>Select your course and section below.</p>
     <ul>
     {% for section in sections %}
         <li><a href= {{ '/' + section.name }}>{{ section.name }}</a></li>

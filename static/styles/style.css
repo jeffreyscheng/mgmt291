@@ -23,7 +23,7 @@ body {
   padding-top:15px;
   padding-bottom:15px;
   overflow:hidden;
-  background-image:url(../files/160bg.png);
+  /*background-image:url(../files/160bg.png);*/
   background-position:center;
   background-repeat:no-repeat;
   background-origin:border-box;
@@ -622,4 +622,15 @@ body {
      margin:0px;
   }
 
+  .column {
+    float: left;
+    width: 50%;
+  }
+
+    /* Clear floats after the columns */
+  .row:after {
+        content: "";
+        display: table;
+        clear: both;
+  }
 }

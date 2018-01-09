@@ -30,6 +30,11 @@ def landing_home():
     # return render_template('cis160.html', sections=Section.query.all())
 
 
+@app.route('/about', methods=['GET', 'POST'])
+def landing_about():
+    return render_template('about.html')
+
+
 @app.route('/add', methods=['GET', 'POST'])
 def landing_add_section():
     # TODO
@@ -56,7 +61,7 @@ def landing_class(section_name):
     else:
         current_section = Section.query.filter_by(name="test_name").first()
         return render_template('class.html',
-                               roleplays=Roleplay.query.with_parent(current_section).all())
+                               roleplays=Roleplay.query.with_parent(current_section).all(), section_name=section_name)
 
 
 @app.route('/<section_name>/add', methods=['GET', 'POST'])
@@ -81,21 +86,19 @@ def landing_roleplay(section_name, roleplay_number):
     print(records)
     students = [record.student_name for record in records]
     student_sign_in = SignInForm()
-    started_template = render_template('v0_started.html', roleplay_name=roleplay.name,
-                                       assignments=roleplay.assignments, form=student_sign_in)
-    unstarted_template = render_template('v0_unstarted.html', roleplay_name=roleplay.name,
-                                         students=students, form=student_sign_in)
+    template = render_template('roleplay.html', roleplay=roleplay, assignments=eval(roleplay.assignments),
+                               students=students, form=student_sign_in)
     if roleplay.started:  # STARTED LOGIC)
         if request.method == 'POST':
             if request.form['submit'] == 'edit':
                 return None  # TODO
-            elif request.form['submit'] == 'reset':
-                return None  # TODO
+            # elif request.form['submit'] == 'reset':
+            #     return None  # TODO
             else:
                 print("unknown POST request")
                 return None
         elif request.method == 'GET':
-            return started_template
+            return template
     else:  # UNSTARTED LOGIC
         if request.method == 'POST':
             if request.form['submit'] == 'assign':
@@ -112,7 +115,7 @@ def landing_roleplay(section_name, roleplay_number):
                 print("unknown POST request")
                 return None
         elif request.method == 'GET':
-            return unstarted_template
+            return template
 
 
 if __name__ == '__main__':

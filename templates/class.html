@@ -1,12 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>class</h1>
+    <h1>{{ section_name }}</h1>
+    <p>Select a roleplay below.</p>
+    <ul>
     {% for roleplay in roleplays %}
-        <a href= {{ '/' + roleplay.section_name }}/{{ roleplay.number }}>Roleplay {{ roleplay.number }}: {{ roleplay.name }}</a>
+        <li>
+            <a href= {{ '/' + roleplay.section_name }}/{{ roleplay.number }}>
+                Roleplay {{ roleplay.number }}: {{ roleplay.name }}
+            </a>
+        </li>
     {% endfor %}
+    </ul>
     <form action="" method="post">
-        <button name="submit" value="add">+New Roleplay(Instructors Only)</button>
+        <button name="submit" value="add">+New Roleplay (Instructors Only)</button>
     </form>
 {#    {% for roleplay in roleplays %}#}
 {#        <form action="" method="post">#}

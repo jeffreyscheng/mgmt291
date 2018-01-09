@@ -18,3 +18,9 @@ class AddRoleplayForm(FlaskForm):
     roleplay_name = StringField('Name', validators=[DataRequired()])
     group_size = IntegerField('Group Size', validators=[DataRequired()])
     submit = SubmitField('Add Roleplay')
+
+
+class AddSectionForm(FlaskForm):
+    section_name = StringField('Name', validators=[DataRequired()])
+    instructor_name = StringField('Instructor', validators=[DataRequired()])
+    submit = SubmitField('Add Section')

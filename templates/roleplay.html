@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ roleplay.section_name }}, Roleplay {{ roleplay.number }}: {{ roleplay.name }}</h1>
+    <h1></h1>
+    {% if roleplay.started %}
+        <p>If you do not have a group below and believe you should, let an instructor know.</p>
+        <p>
+            <dl>
+                {% for group in assignments %}
+                        <dt><b>Group {{ loop.index }}</b></dt>
+                    {% for person in group %}
+                        <dd>{{ person }}</dd>
+                    {% endfor %}
+                {% endfor %}
+            </dl>
+            <form action="" method="post">
+                <button name="submit" value="edit">Edit (Instructors Only)</button>
+            </form>
+        </p>
+{#        <form action="" method="post">#}
+{#            <button name="submit" value="reset">Reset (Instructors Only)</button>#}
+{#        </form>#}
+    {% else %}
+        <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        /* Create two equal columns that floats next to each other */
+        .column {
+            float: left;
+            width: 50%;
+            padding: 10px;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        </style>
+        <div class="row">
+            <div class="column" width="50%">
+                <p>Sign in below to be assigned to a roleplay group.</p>
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    <p>
+                        {{ form.student_name.label }}<br>
+                        {{ form.student_name(size=32) }}
+                    </p>
+                    <p>{{ form.submit() }}</p>
+                </form>
+                <form action="" method="post">
+                    <p><button name="submit" value="assign">Assign (Instructors Only)</button></p>
+                </form>
+            </div>
+            <div class="column" style="background-color:#dfdfff;" width="50%">
+                <p>Currently signed in:</p>
+                <ul>
+                {% for student in students %}
+                    <li>{{ student }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
