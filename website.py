@@ -44,7 +44,7 @@ def landing_add():
     if request.method == 'POST':
         if request.form['submit'] == 'Add Roleplay':
             current_section = Section.query.filter_by(name="test_name").first()
-            current_section.add_roleplay(request.form['roleplay_name'], request.form['roleplay_type'])
+            current_section.add_roleplay(request.form['roleplay_name'], request.form['group_size'])
             return redirect('/')
     else:
         current_section = Section.query.filter_by(name="test_name").first()
@@ -79,7 +79,7 @@ def landing_roleplay(roleplay_number):
         if request.method == 'POST':
             if request.form['submit'] == 'assign':
                 roleplay.start()
-                return started_template
+                return redirect('/' + roleplay_number)
             elif request.form['submit'] == 'Sign In':
                 if student_sign_in.validate_on_submit():
                     roleplay.add_record(request.form['student_name'])

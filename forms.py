@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, IntegerField, SubmitField
 from wtforms.validators import DataRequired
 
 
@@ -16,5 +16,5 @@ class SignInForm(FlaskForm):
 
 class AddRoleplayForm(FlaskForm):
     roleplay_name = StringField('Name', validators=[DataRequired()])
-    roleplay_type = StringField('Type', validators=[DataRequired()])
+    group_size = IntegerField('Group Size', validators=[DataRequired()])
     submit = SubmitField('Add Roleplay')

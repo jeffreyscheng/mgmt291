@@ -8,6 +8,7 @@ import logging
 
 log = logging.getLogger("stableroommate")
 
+
 def readprefs(prefsfn):
     """
     read the preferences from "prefs.csv"
@@ -16,13 +17,13 @@ def readprefs(prefsfn):
 
     prefs = {}
 
-
     for line in inner:
         if len(line) == 0: continue
         line = [s.strip() for s in line]
         prefs[line[0]] = line[1:]
 
     return prefs
+
 
 def fillin(prefs):
     """
@@ -36,38 +37,38 @@ def fillin(prefs):
 
         left = set(names).difference([name]).difference(choices)
 
-
         if len(left) > 0:
             left = list(left)
             random.shuffle(left)
             choices.extend(left)
 
-def checkprefs(prefs):
-    """
-    - `prefs`: preferences dict, name key, list of names as choices in order
-    """
 
-    names = set(prefs.keys())
-
-    for name, choices in prefs.iteritems():
-        try:
-            assert len(names.difference(choices)) == 1
-        except AssertionError, e:
-            log.alert("len(names.difference(choices)) = {0} != 0".format(
-                len(names.difference(choices))))
-            log.alert(name, choices)
-            log.alert(names.difference(choices))
-
-            raise AssertionError(e)
-
-
-        try:
-            assert len(choices) == len(names) - 1
-        except AssertionError, e:
-            log.critical("len(choices) != len(names) - 1")
-            log.critical("{0} != {1}".format(len(choices), len(names)-1))
-            log.critical("{0} {1}".format(name, choices))
-            raise AssertionError(e)
+# def checkprefs(prefs):
+#     """
+#     - `prefs`: preferences dict, name key, list of names as choices in order
+#     """
+#
+#     names = set(prefs.keys())
+#
+#     for name, choices in prefs.iteritems():
+#         try:
+#             assert len(names.difference(choices)) == 1
+#         except AssertionError, e:
+#             log.alert("len(names.difference(choices)) = {0} != 0".format(
+#                 len(names.difference(choices))))
+#             log.alert(name, choices)
+#             log.alert(names.difference(choices))
+#
+#             raise AssertionError(e)
+#
+#
+#         try:
+#             assert len(choices) == len(names) - 1
+#         except AssertionError, e:
+#             log.critical("len(choices) != len(names) - 1")
+#             log.critical("{0} != {1}".format(len(choices), len(names)-1))
+#             log.critical("{0} {1}".format(name, choices))
+#             raise AssertionError(e)
 
 
 def verify_ranks(ranks, prefs):
@@ -83,10 +84,10 @@ def verify_ranks(ranks, prefs):
             idx = ranks[n][m]
             try:
                 assert m == prefs[n][idx]
-            except AssertionError(e):
+            except AssertionError:
                 log.critical("m != prefs[n][idx]")
                 log.critical("{0} != {1}".format(m, prefx[n][idx]))
-                raise AssertionError(e)
+                raise AssertionError
 
 
 def reject(prefs, ranks, holds):
@@ -106,14 +107,13 @@ def reject(prefs, ranks, holds):
             yi = prefs[y][i]
 
             if yi == x:
-                prefs[y] = prefs[y][:i+1]
+                prefs[y] = prefs[y][:i + 1]
 
             # lower rank is better
             elif ranks[yi][holds[yi]] < ranks[yi][y]:
                 prefs[y].pop(i)
                 continue
             i += 1
-
 
 
 def find_all_or_nothing(prefs, ranks, holds):
@@ -135,11 +135,10 @@ def find_all_or_nothing(prefs, ranks, holds):
     else:
         return None
 
-
     # trace through
     while cur not in p:
         # q_i = second person in p_i's list
-        q.append( prefs[cur][1] )
+        q.append(prefs[cur][1])
 
         # p_{i+1} = q_i' last person
         p.append(cur)
@@ -151,7 +150,6 @@ def find_all_or_nothing(prefs, ranks, holds):
     return a
 
 
-
 def phase1(prefs, ranks, curpref=None, debug=False):
     """
     perform phase 1 of the stable roomates problem.
@@ -161,12 +159,12 @@ def phase1(prefs, ranks, curpref=None, debug=False):
     """
 
     # holds
-    holds = dict( (name,None) for name in prefs.keys() )
+    holds = dict((name, None) for name in prefs.keys())
 
     if curpref is None:
-        curpref = dict( (name, 0) for name in prefs.keys() )
+        curpref = dict((name, 0) for name in prefs.keys())
 
-    people = prefs.keys()
+    people = list(prefs.keys())
     random.shuffle(people)
 
     proposed_to = set()
@@ -174,11 +172,11 @@ def phase1(prefs, ranks, curpref=None, debug=False):
     log.info("-- phase 1 -----------")
     log.debug("{0}".format(people))
 
-
     for person in people:
         poser = person
-
-        while (1):
+        print("POSER: " + str(poser))
+        while True:
+            print(curpref[poser])
             # find poser someone
             while curpref[poser] < len(prefs[poser]):
                 # person poser is proposing to
@@ -187,15 +185,12 @@ def phase1(prefs, ranks, curpref=None, debug=False):
 
                 # person poser is holding
                 cchoice = holds[nchoice]
-                log.info("{0} proposes to {1};".format(poser,nchoice))
-
+                log.info("{0} proposes to {1};".format(poser, nchoice))
 
                 # lower ranking is better
-                if cchoice is None or \
-                        ranks[nchoice][poser] < ranks[nchoice][cchoice]:
+                if cchoice is None or ranks[nchoice][poser] < ranks[nchoice][cchoice]:
                     break
                 log.info("{0} rejects {1};".format(nchoice, poser))
-
 
             log.info("{0} holds {1}".format(nchoice, poser))
             holds[nchoice] = poser
@@ -213,29 +208,29 @@ def phase1(prefs, ranks, curpref=None, debug=False):
     return holds
 
 
-
-def stableroomate(prefsfn, debug=False):
+def stableroomate(prefs, debug=False):
     """
     find a stable roomate matching
     """
 
     # read prefs from file
-    prefs = readprefs(prefsfn)
+    # prefs = readprefs(prefsfn)
 
     # make sure everyone has the same number of choices
-    fillin(prefs)
+    # fillin(prefs)
 
     # validate that names are correct
-    checkprefs(prefs)
+    # checkprefs(prefs)
 
     # generate a dictionary of rank values for each name
-    ranks = dict( (idx, dict(zip(val,range(len(val)) )))
-                 for idx,val in prefs.iteritems() )
+    ranks = dict((idx, dict(zip(val, range(len(val)))))
+                 for idx, val in prefs.items())
 
     # validate the ranks correspond to the proper indices
     verify_ranks(ranks, prefs)
 
     # phase1
+    print("STARTING PHASE 1")
     holds = phase1(prefs, ranks)
 
     log_holds(holds)
@@ -244,12 +239,16 @@ def stableroomate(prefsfn, debug=False):
 
     cycle = find_all_or_nothing(prefs, ranks, holds)
 
-    if cycle is not None and  len(cycle) == 3:
-        print "no solution exists"
+    if cycle is not None and len(cycle) == 3:
+        print("no solution exists")
         return
 
+    print("STARTING PHASE 2")
+    iteration = 0
     ## phase 2
     while cycle is not None:
+        iteration += 1
+        print(iteration)
         log.debug("-- cycle detected -----------")
         log.debug("{0}".format(cycle))
 
@@ -268,11 +267,10 @@ def stableroomate(prefsfn, debug=False):
 
         cycle = find_all_or_nothing(prefs, ranks, holds)
 
-
-
     # print prefs
     # print ranks
     return holds
+
 
 def log_holds(holds):
     """
@@ -283,7 +281,6 @@ def log_holds(holds):
     log.info("-- holds -----------")
     for h in holds:
         log.info("{0} {1}".format(h, holds[h]))
-
 
 
 def log_prefs(prefs):
@@ -333,20 +330,19 @@ def swap_better(set1, set2, ranks):
             x1y1, y1x1, x2y2, y2x2, x1y2, y2x1, x2y1, y1x2))
 
 
-
 def verify_match(matches):
     """
     """
 
-    prefsfn = sys.argv[1]
+    # prefsfn = sys.argv[1]
 
     # read prefs from file
-    prefs = readprefs(prefsfn)
-    fillin(prefs)
+    # prefs = readprefs(prefsfn)
+    # fillin(prefs)
 
     # generate a dictionary of rank values for each name
-    ranks = dict( (idx, dict(zip(val,range(len(val)) )))
-                 for idx,val in prefs.iteritems() )
+    ranks = dict((idx, dict(zip(val, range(len(val)))))
+                 for idx, val in prefs.items())
 
     for x in matches:
         for y in matches:
@@ -373,7 +369,6 @@ def main():
                       default=False, help="Print Debuggin Code")
     (options, args) = parser.parse_args()
 
-
     if options.debug:
         logging.basicConfig(level=logging.DEBUG)
 
@@ -386,13 +381,11 @@ def main():
     if matches is not None:
         print("-- matches -----------")
         for m in matches:
-            print "{0} {1}".format(m, matches[m])
+            print("{0} {1}".format(m, matches[m]))
 
         if options.validate:
             log.info("verifying matches...")
             verify_match(matches)
-
-
 
 
 if __name__ == '__main__':
