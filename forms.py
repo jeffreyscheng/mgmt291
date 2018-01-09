@@ -21,6 +21,8 @@ class AddRoleplayForm(FlaskForm):
 
 
 class AddSectionForm(FlaskForm):
-    section_name = StringField('Name', validators=[DataRequired()])
+    section_name = StringField('Section Name', validators=[DataRequired()])
     instructor_name = StringField('Instructor', validators=[DataRequired()])
+    password = StringField('Password', validators=[DataRequired()])
+    password2 = StringField('Confirm Password', validators=[DataRequired()])
     submit = SubmitField('Add Section')

@@ -26,6 +26,9 @@ def favicon():
 
 @app.route('/', methods=['GET', 'POST'])
 def landing_home():
+    if request.method == 'POST':
+        if request.form['submit'] == 'add':
+            return redirect('/add')
     return render_template('home.html', sections=Section.query.all())
     # return render_template('cis160.html', sections=Section.query.all())
 
@@ -37,17 +40,18 @@ def landing_about():
 
 @app.route('/add', methods=['GET', 'POST'])
 def landing_add_section():
-    # TODO
-    form = AddRoleplayForm()
+    form = AddSectionForm()
     if request.method == 'POST':
-        if request.form['submit'] == 'Add Roleplay':
-            current_section = Section.query.filter_by(name="test_name").first()
-            current_section.add_roleplay(request.form['roleplay_name'], request.form['group_size'])
-            return redirect('/')
+        if request.form['submit'] == 'Add Section':
+            print(request.form)
+            name = request.form['section_name']
+            new_section = Section(name=name, instructor=request.form["instructor_name"],
+                                  password_hash=request.form["password"])
+            db.session.add(new_section)
+            db.session.commit()
+            return redirect('/' + name)
     else:
-        current_section = Section.query.filter_by(name=section_name).first()
-        return render_template('add_class.html', roleplays=Roleplay.query.with_parent(current_section).all(),
-                               form=form)
+        return render_template('add_class.html', form=form)
 
 
 @app.route('/<section_name>', methods=['GET', 'POST'])
@@ -59,7 +63,7 @@ def landing_class(section_name):
         #     roleplay_number = request.form['submit']
         #     return redirect('/' + section_name + '/' + roleplay_number)
     else:
-        current_section = Section.query.filter_by(name="test_name").first()
+        current_section = Section.query.filter_by(name=section_name).first()
         return render_template('class.html',
                                roleplays=Roleplay.query.with_parent(current_section).all(), section_name=section_name)
 
@@ -74,7 +78,7 @@ def landing_add_roleplay(section_name):
             return redirect('/' + section_name)
     else:
         current_section = Section.query.filter_by(name=section_name).first()
-        return render_template('add_class.html', roleplays=Roleplay.query.with_parent(current_section).all(),
+        return render_template('add_roleplay.html', roleplays=Roleplay.query.with_parent(current_section).all(),
                                form=form)
 
 

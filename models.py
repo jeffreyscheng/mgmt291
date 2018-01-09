@@ -31,7 +31,7 @@ class Section(db.Model):
     def add_roleplay(self, name, group_size):
         associated_roleplays = Roleplay.query.with_parent(self).all()
         num_roleplays = len(associated_roleplays)
-        new_roleplay = Roleplay(name=name, number=num_roleplays + 1, assignments='[]',
+        new_roleplay = Roleplay(id=self.name + name, name=name, number=num_roleplays + 1, assignments='[]',
                                 started=False, parent_section=self, group_size=group_size)
         db.session.add(new_roleplay)
         db.session.commit()
@@ -43,7 +43,8 @@ class Section(db.Model):
 
 
 class Roleplay(db.Model):
-    name = db.Column(db.String(64), primary_key=True)
+    id = db.Column(db.String(64), primary_key=True)
+    name = db.Column(db.String(64))
     number = db.Column(db.Integer, index=True)
     assignments = db.Column(db.String(4000))
     started = db.Column(db.Boolean)

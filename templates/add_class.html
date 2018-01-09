@@ -1,16 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>add</h1>
+    <h1>Create a New Course Section</h1>
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
-            {{ form.roleplay_name.label }}<br>
-            {{ form.roleplay_name(size=32) }}
+            {{ form.section_name.label }}<br>
+            {{ form.section_name(size=32) }}
         </p>
         <p>
-            {{ form.group_size.label }}<br>
-            {{ form.group_size(size=32) }}
+            {{ form.instructor_name.label }}<br>
+            {{ form.instructor_name(size=32) }}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size=32) }}
+        </p>
+        <p>
+            {{ form.password2.label }}<br>
+            {{ form.password2(size=32) }}
         </p>
         <p>{{ form.submit() }}</p>
     </form>
