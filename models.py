@@ -127,7 +127,7 @@ class Roleplay(db.Model):
 class AttendanceRecord(db.Model):
     id = db.Column(db.String(64), primary_key=True)
     student_name = db.Column(db.String(64))
-    roleplay = db.Column(db.String(64), db.ForeignKey('roleplay.name'))
+    roleplay_id = db.Column(db.String(64), db.ForeignKey('roleplay.id'))
     # __table_args__ = (ForeignKeyConstraint([id], [Roleplay.id]), {})
 
     # def __init__(self, idx, student_name, roleplay):

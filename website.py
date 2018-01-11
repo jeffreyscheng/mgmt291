@@ -81,7 +81,7 @@ def landing_add_roleplay(section_name):
 def landing_roleplay(section_name, roleplay_number):
     print("refreshed")
     roleplay = Roleplay.query.filter_by(section_name=section_name, number=roleplay_number).first()
-    records = AttendanceRecord.query.filter_by(parent_roleplay=roleplay).all()
+    records = AttendanceRecord.query.with_parent(roleplay).all()
     print(records)
     students = [record.student_name for record in records]
     student_sign_in = SignInForm()
