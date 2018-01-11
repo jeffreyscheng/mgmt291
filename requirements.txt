@@ -119,7 +119,6 @@ spyder==2.3.8
 SQLAlchemy==1.0.12
 statsmodels==0.6.1
 sympy==1.0
-tables==3.2.2
 terminado==0.5
 toolz==0.8.2
 tornado==4.3
