@@ -1,2 +1,4 @@
 rm app.db
-python -c 'from models import db; db.create_all()'
+rm -r migrations
+python create.py
+python manage.py db init

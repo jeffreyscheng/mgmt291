@@ -1,6 +1,8 @@
 import pandas as pd
 import itertools
 from flask import Flask
+from sqlalchemy import ForeignKeyConstraint
+
 from config import *
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -20,13 +22,10 @@ class Section(db.Model):
     password_hash = db.Column(db.String(128))
     roleplays = db.relationship('Roleplay', backref='parent_section', lazy='dynamic')
 
-    # def __init__(self, name, instructor, password):
+    # def __init__(self, name, instructor, password_hash):
     #     self.name = name
-    #     # self.students = students # unnecessary
     #     self.instructor = instructor
-    #     self.password = password
-    #     self.roleplays = []
-    #     # self.students = {}  # e.g. students['Jeffrey Cheng'] = ['partner 1', 'partner 2']
+    #     self.password_hash = password_hash
 
     def add_roleplay(self, name, group_size):
         associated_roleplays = Roleplay.query.with_parent(self).all()
@@ -51,6 +50,16 @@ class Roleplay(db.Model):
     section_name = db.Column(db.String(64), db.ForeignKey('section.name'))
     group_size = db.Column(db.Integer)
     attendees = db.relationship('AttendanceRecord', backref='parent_roleplay', lazy='dynamic')
+    # __table_args__ = (ForeignKeyConstraint([name], [Section.name]), {})
+
+    # def __init__(self, idx, name, number, assignments, started, section_name, group_size):
+    #     self.id = idx
+    #     self.name = name
+    #     self.number = number
+    #     self.assignments = assignments
+    #     self.started = started
+    #     self.section_name = section_name
+    #     self.group_size = group_size
 
     def __repr__(self):
         return '<Roleplay {}>'.format(self.name + ': ' + str(self.number))
@@ -119,6 +128,12 @@ class AttendanceRecord(db.Model):
     id = db.Column(db.String(64), primary_key=True)
     student_name = db.Column(db.String(64))
     roleplay = db.Column(db.String(64), db.ForeignKey('roleplay.name'))
+    # __table_args__ = (ForeignKeyConstraint([id], [Roleplay.id]), {})
+
+    # def __init__(self, idx, student_name, roleplay):
+    #     self.id = idx
+    #     self.student_name = student_name
+    #     self.roleplay = roleplay
 
     def __repr__(self):
         return '<Record {}>'.format(self.student_name + ', ' + self.roleplay)
