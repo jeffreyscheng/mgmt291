@@ -15,9 +15,6 @@ chest==0.2.3
 cloudpickle==0.1.1
 clyent==1.2.1
 colorama==0.3.7
-conda==4.3.30
-conda-build==1.20.0
-conda-manager==0.3.1
 configobj==5.0.6
 cryptography==1.4
 cycler==0.10.0
