@@ -5,6 +5,8 @@ from flask import request, url_for
 from flask import redirect
 from forms import *
 
+# TODO PASSWORD PROTECTION
+# TODO VALIDATION ON ROLEPLAY SIZE
 
 # check_empty = Section.query.first()
 # if check_empty is None:

@@ -107,8 +107,7 @@ class Roleplay(db.Model):
             pref_list.remove(student)
             pref_lists[reverse_encoding[student]] = [reverse_encoding[student] for student in pref_list]
         print(pref_lists)
-        # TODO: assign
-        if self.group_size == 2:
+        if self.group_size == 2: # TODO odd
             matching = stableroomate(pref_lists)
             print(matching)
             assignments = []
@@ -120,6 +119,8 @@ class Roleplay(db.Model):
                     del matching[i]
             print(assignments)
             self.assignments = str(assignments)
+        elif self.group_size >= 3:
+            pass # TODO brute force, odd
         db.session.commit()
         print("FINISHED ASSIGNING")
 
