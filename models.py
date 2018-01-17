@@ -137,4 +137,4 @@ class AttendanceRecord(db.Model):
     #     self.roleplay = roleplay
 
     def __repr__(self):
-        return '<Record {}>'.format(self.student_name + ', ' + self.roleplay)
+        return '<Record {}>'.format(self.student_name + ', ' + self.roleplay_id)
