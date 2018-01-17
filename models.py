@@ -108,10 +108,7 @@ class Roleplay(db.Model):
         remainder = len(students) % self.group_size
         dropped = []
         while remainder != 0:
-            encounters = all_encounters.copy()
             min_student = min(min_tracker, key=min_tracker.get)
-            print("PRE-DROP")
-            print(encounters)
             encounters.drop([min_student])
             encounters.drop([min_student], axis=1, inplace=True)
             print("POST_DROP")
