@@ -116,7 +116,8 @@ class Roleplay(db.Model):
             dropped.append(min_student)
             remainder -= 1
         remaining_students = [student for student in students if student not in dropped]
-        print("ENCOUNTERS:" + encounters)
+        print("ENCOUNTERS:")
+        print(encounters)
         pref_lists = {}
         for student in remaining_students:
             print("REMAINING_STUDENTS:" + remaining_students)
