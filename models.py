@@ -110,6 +110,7 @@ class Roleplay(db.Model):
         while remainder != 0:
             min_student = min(min_tracker, key=min_tracker.get)
             encounters.drop([min_student])
+            encounters = encounters[encounters.name != min_student]
             encounters.drop([min_student], axis=1, inplace=True)
             print("POST_DROP")
             print(encounters)
