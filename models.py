@@ -110,17 +110,20 @@ class Roleplay(db.Model):
         while remainder != 0:
             encounters = all_encounters.copy()
             min_student = min(min_tracker, key=min_tracker.get)
+            print("PRE-DROP")
+            print(encounters)
             encounters.drop([min_student])
             encounters.drop([min_student], axis=1, inplace=True)
+            print("POST_DROP")
+            print(encounters)
             del min_tracker[min_student]
             dropped.append(min_student)
             remainder -= 1
         remaining_students = [student for student in students if student not in dropped]
-        print("ENCOUNTERS:")
-        print(encounters)
         pref_lists = {}
         for student in remaining_students:
-            print("REMAINING_STUDENTS:" + remaining_students)
+            print("REMAINING_STUDENTS:")
+            print(remaining_students)
             student_encounters = encounters[student].to_dict()
             pref_list = sorted(student_encounters, key=lambda k: student_encounters[k])
             pref_list.remove(student)
