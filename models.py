@@ -146,7 +146,7 @@ class Roleplay(db.Model):
             for group in remaining_groups:
                 for member in group:
                     possible_matches[group] += all_encounters.loc[curr, member]
-            best_group = min(possible_matches, possible_matches.get)
+            best_group = min(possible_matches, key=possible_matches.get)
             assignments.remove(best_group)
             best_group = best_group + (curr,)
             assignments.append(best_group)
