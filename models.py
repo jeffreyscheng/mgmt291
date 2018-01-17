@@ -116,9 +116,10 @@ class Roleplay(db.Model):
             dropped.append(min_student)
             remainder -= 1
         remaining_students = [student for student in students if student not in dropped]
-        print(encounters)
+        print("ENCOUNTERS:" + encounters)
         pref_lists = {}
         for student in remaining_students:
+            print("REMAINING_STUDENTS:" + remaining_students)
             student_encounters = encounters[student].to_dict()
             pref_list = sorted(student_encounters, key=lambda k: student_encounters[k])
             pref_list.remove(student)

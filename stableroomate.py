@@ -230,7 +230,7 @@ def stableroomate(prefs, debug=False):
     verify_ranks(ranks, prefs)
 
     # phase1
-    print("STARTING PHASE 1")
+    # print("STARTING PHASE 1")
     holds = phase1(prefs, ranks)
 
     log_holds(holds)
@@ -243,12 +243,12 @@ def stableroomate(prefs, debug=False):
         print("no solution exists")
         return
 
-    print("STARTING PHASE 2")
+    # print("STARTING PHASE 2")
     iteration = 0
     ## phase 2
     while cycle is not None:
         iteration += 1
-        print(iteration)
+        # print(iteration)
         log.debug("-- cycle detected -----------")
         log.debug("{0}".format(cycle))
 
