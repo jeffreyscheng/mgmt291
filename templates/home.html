@@ -6,7 +6,7 @@
     <p>Select your course and section below.</p>
     <ul>
     {% for section in sections %}
-        <li><a href= {{ '/' + section.name }}>{{ section.name }}</a></li>
+        <li><a href= {{ '/' + section.name}}>{{ section.name + ' (Instructor: ' + section.instructor + ')'}}</a></li>
     {% endfor %}
     </ul>
     <form action="" method="post">

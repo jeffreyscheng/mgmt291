@@ -5,6 +5,7 @@ from flask import request, url_for
 from flask import redirect
 from forms import *
 
+
 # TODO PASSWORD PROTECTION
 # TODO VALIDATION ON ROLEPLAY SIZE
 
@@ -14,6 +15,7 @@ from forms import *
 #     db.session.add(test_section)
 #     db.session.commit()
 
+# negotiationsarefun
 
 @app.route('/favicon.ico')
 def favicon():
@@ -21,12 +23,32 @@ def favicon():
                                mimetype='image/vnd.microsoft.icon')
 
 
+# TODO :  password-lock on add
 @app.route('/', methods=['GET', 'POST'])
 def landing_home():
     if request.method == 'POST':
         if request.form['submit'] == 'add':
             return redirect('/add')
     return render_template('home.html', sections=Section.query.all())
+    # return render_template('cis160.html', sections=Section.query.all())
+
+
+@app.route('/<path:destination>/login', methods=['GET', 'POST'])
+def landing_login(destination):
+    form = LoginForm()
+    if request.method == 'POST':
+        print(request.form)
+        if request.form['submit'] == 'Instructor Sign In':
+            try:
+                curr_section = Section.query.filter_by(name=request.form['class_name']).first()
+                actual_hash = curr_section.password_hash
+                if hash_string(request.form['password']) == actual_hash:
+                    return redirect('/' + destination)
+                else:
+                    return render_template('login.html', form=form, failed=True)
+            except AttributeError:
+                return render_template('login.html', form=form, failed=True)
+    return render_template('login.html', form=form, failed=False)
     # return render_template('cis160.html', sections=Section.query.all())
 
 
@@ -43,7 +65,7 @@ def landing_add_section():
             print(request.form)
             name = request.form['section_name']
             new_section = Section(name=name, instructor=request.form["instructor_name"],
-                                  password_hash=request.form["password"])
+                                  password_hash=hash_string(request.form["password"]))
             db.session.add(new_section)
             db.session.commit()
             return redirect('/' + name)
@@ -51,11 +73,12 @@ def landing_add_section():
         return render_template('add_class.html', form=form)
 
 
+# TODO :  password-lock on add
 @app.route('/<section_name>', methods=['GET', 'POST'])
 def landing_class(section_name):
     if request.method == 'POST':
         if request.form['submit'] == 'add':
-            return redirect('/' + section_name + '/add')
+            return redirect('/' + section_name + '/add/login')
         # else:
         #     roleplay_number = request.form['submit']
         #     return redirect('/' + section_name + '/' + roleplay_number)
@@ -79,6 +102,7 @@ def landing_add_roleplay(section_name):
                                form=form)
 
 
+# TODO :  password-lock on assign and edit
 @app.route('/<section_name>/<roleplay_number>', methods=['GET', 'POST'])
 def landing_roleplay(section_name, roleplay_number):
     print("refreshed")
@@ -89,22 +113,29 @@ def landing_roleplay(section_name, roleplay_number):
     student_sign_in = SignInForm()
     template = render_template('roleplay.html', roleplay=roleplay, assignments=eval(roleplay.assignments),
                                students=students, form=student_sign_in)
-    if roleplay.started:  # STARTED LOGIC)
+    if roleplay.started:  # STARTED LOGIC
+        print("GOT HERE")
+        print(roleplay.assignments)
+        if roleplay.assignments == '' or roleplay.assignments == '[]':
+            roleplay.start()
         if request.method == 'POST':
             if request.form['submit'] == 'edit':
-                return redirect('/' + section_name + '/' + roleplay_number + '/edit')
+                return redirect('/' + section_name + '/' + roleplay_number + '/edit/login')
             # elif request.form['submit'] == 'reset':
             #     return None  # TODO
             else:
                 print("unknown POST request")
                 return None
         elif request.method == 'GET':
-            return template
+            roleplay = Roleplay.query.filter_by(section_name=section_name, number=roleplay_number).first()
+            return render_template('roleplay.html', roleplay=roleplay, assignments=eval(roleplay.assignments),
+                                   students=students, form=student_sign_in)
     else:  # UNSTARTED LOGIC
         if request.method == 'POST':
             if request.form['submit'] == 'assign':
-                roleplay.start()
-                return redirect('/' + section_name + '/' + roleplay_number)
+                roleplay.started = True
+                db.session.commit()
+                return redirect('/' + section_name + '/' + roleplay_number + '/login')
             elif request.form['submit'] == 'Sign In':
                 if student_sign_in.validate_on_submit():
                     roleplay.add_record(request.form['student_name'])

@@ -1,5 +1,6 @@
 import pandas as pd
 import itertools
+import hashlib
 from flask import Flask
 from sqlalchemy import ForeignKeyConstraint
 
@@ -14,6 +15,11 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 db.session.expire_on_commit = False
 migrate = Migrate(app, db)
+
+
+def hash_string(pwd):
+    hash_object = hashlib.md5(pwd.encode('utf-8'))
+    return hash_object.hexdigest()
 
 
 class Section(db.Model):
