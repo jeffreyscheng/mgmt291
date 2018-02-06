@@ -177,7 +177,7 @@ class Roleplay(db.Model):
             def evaluate_attempt(grouping):
                 student_costs = {}
                 for team in grouping:
-                    for student in group:
+                    for student in team:
                         other_students = list(team)
                         if students in other_students:
                             other_students.remove(student)
