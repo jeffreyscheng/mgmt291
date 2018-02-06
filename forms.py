@@ -3,10 +3,10 @@ from wtforms import StringField, PasswordField, BooleanField, IntegerField, Subm
 from wtforms.validators import DataRequired
 
 
-class LoginForm(FlaskForm):
-    class_name = StringField('Class', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Instructor Sign In')
+# class LoginForm(FlaskForm):
+#     class_name = StringField('Class', validators=[DataRequired()])
+#     password = PasswordField('Password', validators=[DataRequired()])
+#     submit = SubmitField('Instructor Sign In')
 
 
 class SignInForm(FlaskForm):
@@ -23,8 +23,9 @@ class AddRoleplayForm(FlaskForm):
 class AddSectionForm(FlaskForm):
     section_name = StringField('Section Name', validators=[DataRequired()])
     instructor_name = StringField('Instructor', validators=[DataRequired()])
-    password = StringField('Password', validators=[DataRequired()])
-    password2 = StringField('Confirm Password', validators=[DataRequired()])
+    # password = StringField('Password', validators=[DataRequired()])
+    # password2 = StringField('Confirm Password', validators=[DataRequired()])
+    roster = StringField('Roster', validators=[DataRequired()])
     submit = SubmitField('Add Section')
 
 

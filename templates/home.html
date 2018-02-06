@@ -12,4 +12,45 @@
     <form action="" method="post">
     <button name="submit" value="add">+New Section (Instructors Only)</button>
     </form>
+           <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        /* Create two equal columns that floats next to each other */
+        .column {
+            float: left;
+            width: 50%;
+            padding: 10px;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        </style>
+        <div class="row">
+            <div class="column" width="50%">
+                <p><b>Odds:</b></p>
+                <ul>
+                {% for odd in odds %}
+                    <li>{{ odd }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+            <div class="column" style="background-color:#dfdfff;" width="50%">
+                <p><b>Evens:</b></p>
+                <ul>
+                {% for even in evens %}
+                    <li>{{ even }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
 {% endblock %}

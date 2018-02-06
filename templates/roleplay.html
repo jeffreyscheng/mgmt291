@@ -17,6 +17,9 @@
             <form action="" method="post">
                 <button name="submit" value="edit">Edit (Instructors Only)</button>
             </form>
+            <form action="" method="post">
+                <button name="submit" value="reset">Reset (Instructors Only)</button>
+            </form>
         </p>
 {#        <form action="" method="post">#}
 {#            <button name="submit" value="reset">Reset (Instructors Only)</button>#}
@@ -47,7 +50,7 @@
         </style>
         <div class="row">
             <div class="column" width="50%">
-                <p>Sign in below to be assigned to a roleplay group.</p>
+                <p>Sign in below to be assigned to a roleplay group.  Please spell your name (first and last, e.g. Jeffrey Cheng) as it is in the roster (below).</p>
                 <form action="" method="post">
                     {{ form.hidden_tag() }}
                     <p>
@@ -69,5 +72,11 @@
                 </ul>
             </div>
         </div>
+        <p>Roster:</p>
+        <dl>
+        {% for person in roster %}
+            <dd> {{ person }}</dd>
+        {% endfor %}
+        </dl>
     {% endif %}
 {% endblock %}

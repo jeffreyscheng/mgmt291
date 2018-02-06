@@ -1,6 +1,7 @@
 import pandas as pd
 import itertools
 import hashlib
+import re
 from flask import Flask
 from sqlalchemy import ForeignKeyConstraint
 
@@ -8,6 +9,7 @@ from config import *
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from stableroomate import stableroomate
+import numpy as np
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -25,7 +27,8 @@ def hash_string(pwd):
 class Section(db.Model):
     name = db.Column(db.String(64), primary_key=True)
     instructor = db.Column(db.String(64), index=True)
-    password_hash = db.Column(db.String(128))
+    # password_hash = db.Column(db.String(128))
+    # roster = db.Column(db.String(64))
     roleplays = db.relationship('Roleplay', backref='parent_section', lazy='dynamic')
 
     # def __init__(self, name, instructor, password_hash):
@@ -82,16 +85,30 @@ class Roleplay(db.Model):
     def add_record(self, student_name):
         exists = AttendanceRecord.query.with_parent(self).filter_by(student_name=student_name).first()
         if exists is None:
-            a = AttendanceRecord(id=self.name + ":" + student_name,
+            a = AttendanceRecord(id=self.id + ":" + student_name,
                                  student_name=student_name, parent_roleplay=self)
             db.session.add(a)
             db.session.commit()
+
+    def edit_assignments(self, edit_string):
+        edit_arr = edit_string.split('\n')
+        nested = [group.split(', ') for group in edit_arr]
+        students = [student.strip('\'') for nest in nested for student in nest]
+        for student in students:
+            records = AttendanceRecord.query.filter_by(student_name=student).all()
+            if not records:
+                self.add_record(re.sub(r'([^\s\w-]|_)+', '', student))
+        edit_arr = ['(' + group + ')' for group in edit_arr]
+        new_assignments_string = '[' + ','.join(edit_arr) + ']'
+        self.assignments = new_assignments_string
+        db.session.commit()
 
     def start(self):
         self.started = True
         # gets preferences
         records = AttendanceRecord.query.with_parent(self).all()
-        students = [record.student_name for record in records]
+        students = [re.sub(r'([^\s\w-]|_)+', '', record.student_name) for record in records]
+        students = list(set(students))
         encoding = {rank: students[rank - 1] for rank in range(1, len(students) + 1)}
         reverse_encoding = {encoding[key]: key for key in encoding}
         all_encounters = pd.DataFrame(0, index=students, columns=students)
@@ -143,7 +160,35 @@ class Roleplay(db.Model):
                     del matching[matching[i]]
                     del matching[i]
         elif self.group_size >= 3:
-            pass  # TODO brute force
+            def generate_attempt():
+                # print("PLEASE FOR MY SANITY")
+                # for thing in remaining_students:
+                #     print(thing)
+                # print("END SANITY")
+                indices = list(np.random.permutation(len(remaining_students)))
+                shuffled = [remaining_students[index - 1] for index in indices]
+                # print("SHUFFLED:")
+                # print(shuffled)
+                # for thing in shuffled:
+                #     print(thing)
+                return [tuple(shuffled[j:j + self.group_size]) for j in
+                        range(0, len(remaining_students), self.group_size)]
+
+            def evaluate_attempt(grouping):
+                student_costs = {}
+                for team in grouping:
+                    for student in group:
+                        other_students = list(team)
+                        if students in other_students:
+                            other_students.remove(student)
+                        student_costs[student] = sum([encounters.loc[student, other] for other in other_students])
+                return sum(student_costs.values())
+
+            attempts = []
+            for i in range(1000):
+                attempt = generate_attempt()
+                attempts.append((attempt, evaluate_attempt(attempt)))
+            assignments = min(attempts, key=lambda item: item[1])[0]
         added = []
         while dropped:  # takes care of oddballs
             curr = dropped.pop()
@@ -157,10 +202,10 @@ class Roleplay(db.Model):
             best_group = best_group + (curr,)
             assignments.append(best_group)
             added.append(best_group)
-        print(assignments)
         self.assignments = str(assignments)
         db.session.commit()
         print("FINISHED ASSIGNING")
+        print(self.assignments)
 
 
 class AttendanceRecord(db.Model):
