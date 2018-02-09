@@ -12,6 +12,10 @@
             {{ form.group_size.label }}<br>
             {{ form.group_size(size=32) }}
         </p>
+        <p>
+            {{ form.auto_sign.label }}<br>
+            {{ form.auto_sign(size=32) }}
+        </p>
         <p>{{ form.submit() }}</p>
     </form>
 {% endblock %}

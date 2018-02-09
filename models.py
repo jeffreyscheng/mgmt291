@@ -45,6 +45,7 @@ class Section(db.Model):
         db.session.commit()
         print("TESTING IN ADD_ROLEPLAY")
         print(Roleplay.query.all())
+        return new_roleplay
 
     def __repr__(self):
         return '<Section {}>'.format(self.name)
@@ -102,6 +103,10 @@ class Roleplay(db.Model):
         new_assignments_string = '[' + ','.join(edit_arr) + ']'
         self.assignments = new_assignments_string
         db.session.commit()
+
+    def sign_all(self, students):
+        for student in students:
+            self.add_record(student)
 
     def start(self):
         self.started = True

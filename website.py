@@ -31,6 +31,13 @@ odd_roster.sort()
 roster = even_roster + odd_roster
 roster.sort()
 
+# TEMPORARY SCRIPT FOR DELETING ROLEPLAYS
+# eggs = Roleplay.query.filter_by(name="Pheasant Egg").all()
+# for egg in eggs:
+#     attendance = AttendanceRecord.query.with_parent(egg).delete()
+#     db.session.delete(egg)
+# db.session.commit()
+
 
 # check_empty = Section.query.first()
 # if check_empty is None:
@@ -119,7 +126,13 @@ def landing_add_roleplay(section_name):
     if request.method == 'POST':
         if request.form['submit'] == 'Add Roleplay':
             current_section = Section.query.filter_by(name=section_name).first()
-            current_section.add_roleplay(request.form['roleplay_name'], request.form['group_size'])
+            new_roleplay = current_section.add_roleplay(request.form['roleplay_name'], request.form['group_size'])
+            if current_section.name == '409-Evens':
+                students = even_roster
+            else:
+                students = odd_roster
+            new_roleplay.sign_all(students)
+            # new_roleplay.started = True
             return redirect('/' + section_name)
     else:
         current_section = Section.query.filter_by(name=section_name).first()

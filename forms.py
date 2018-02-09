@@ -17,6 +17,7 @@ class SignInForm(FlaskForm):
 class AddRoleplayForm(FlaskForm):
     roleplay_name = StringField('Name', validators=[DataRequired()])
     group_size = IntegerField('Group Size', validators=[DataRequired()])
+    auto_sign = BooleanField('Automatically Sign Everyone In', validators=[DataRequired()])
     submit = SubmitField('Add Roleplay')
 
 
